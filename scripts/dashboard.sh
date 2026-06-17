@@ -354,6 +354,9 @@ class DashboardHandler(http.server.SimpleHTTPRequestHandler):
                 'team_meeting_ended': 'idle',
                 'role_started': 'working',
                 'task_dispatched': 'working',
+                'todo_started': 'working',
+                'todo_completed': 'done',
+                'submitted_to_pm': 'done',
                 'followup_dispatched': 'working',
                 'pm_review_started': 'working',
                 'review_started': 'working',
@@ -364,6 +367,7 @@ class DashboardHandler(http.server.SimpleHTTPRequestHandler):
                 'peer_handoff': 'done',
                 'followup_completed': 'done',
                 'pm_review_completed': 'done',
+                'pm_feedback_completed': 'idle',
                 'workflow_completed': 'done',
                 'role_idle': 'idle',
             }

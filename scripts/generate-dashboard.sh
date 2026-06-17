@@ -1229,6 +1229,9 @@ for event in task_send_events:
         'summary': task_event_preview(event),
         'delivery': event.get('delivery', ''),
         'sendId': event.get('sendId', ''),
+        'todos': event.get('todos') or [],
+        'todoIndex': event.get('todoIndex'),
+        'todoTotal': event.get('todoTotal'),
     })
 
 def read_workflow_objective(workflow_dir):

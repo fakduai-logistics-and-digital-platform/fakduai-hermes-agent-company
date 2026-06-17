@@ -75,6 +75,10 @@ body.layout-editing #layout-edit-layer{display:block;pointer-events:auto;cursor:
 #chat-feed .route{color:#79c0ff;font-weight:800}
 #chat-feed .chtime{margin-left:auto;color:#6e7681;white-space:nowrap}
 #chat-feed .chtext{font-size:10px;line-height:1.3;color:#dbe7f3;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
+#chat-feed .todo-mini{margin-top:4px;padding:4px 5px;border:1px solid rgba(168,85,247,.28);border-radius:6px;background:rgba(88,28,135,.16);font-size:9px;line-height:1.25;color:#d8b4fe}
+#chat-feed .todo-head{font-weight:900;color:#f0abfc;margin-bottom:2px}
+#chat-feed .todo-line{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#d8b4fe}
+#chat-feed .todo-line.done{color:#86efac}
 #chat-feed.empty{display:none}
 #chat-feed.min{width:240px;max-height:29px}
 #chat-feed.min .chbody{display:none}
@@ -1089,7 +1093,10 @@ function renderActivityChat(){
   el.innerHTML=`<div class="chh"><span class="cht">Chat</span><span class="chact"><span class="chlive">${rows.length}</span><button class="chmin" onclick="toggleActivityChat(event)">${minimized?'+':'−'}</button></span></div><div class="chbody">${rows.map(a=>{
     const route=[a.from,a.to].filter(Boolean).join(' -> ')||a.type||a.kind||'activity';
     const msg=(a.message||a.summary||'').replace(/\s+/g,' ').trim();
-    return`<div class="chr"><div class="chmeta"><span class="route">${esc(route)}</span><span class="chtime">${fmtDT(a.ts)||''}</span></div><div class="chtext">${esc(msg||a.workflowId||'Activity updated')}</div></div>`;
+    const todos=Array.isArray(a.todos)?a.todos:[];
+    const ti=Number(a.todoIndex)||0,tt=Number(a.todoTotal)||todos.length;
+    const todoHtml=todos.length?`<div class="todo-mini"><div class="todo-head">Todo ${Math.min(ti||1,tt)}/${tt}</div>${todos.slice(0,5).map((t,i)=>`<div class="todo-line ${i<(ti||0)?'done':''}">${i<(ti||0)?'☑':'☐'} ${esc(t)}</div>`).join('')}</div>`:'';
+    return`<div class="chr"><div class="chmeta"><span class="route">${esc(route)}</span><span class="chtime">${fmtDT(a.ts)||''}</span></div><div class="chtext">${esc(msg||a.workflowId||'Activity updated')}</div>${todoHtml}</div>`;
   }).join('')}</div>`;
 }
 function toggleActivityChat(e){
