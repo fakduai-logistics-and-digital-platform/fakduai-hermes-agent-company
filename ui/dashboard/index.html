@@ -49,7 +49,7 @@ body.wide #stage-map{max-height:calc(100vw / 1.5)}
 #meeting-glow{display:none}
 #meeting-glow.on{display:none}
 #agent-layer{position:absolute;inset:0;pointer-events:none;z-index:3}
-#office-cat{position:absolute;left:51%;top:33%;width:32px;height:32px;z-index:3;transform:translate(-50%,-100%) scale(2.15);transform-origin:50% 100%;pointer-events:none;filter:drop-shadow(0 2px 2px rgba(0,0,0,.42));image-rendering:pixelated;transition:left 16s linear,top 16s linear}
+#office-cat{position:absolute;left:51%;top:33%;width:32px;height:32px;z-index:3;transform:translate(-50%,-100%) scale(2.15);transform-origin:50% 100%;pointer-events:none;filter:drop-shadow(0 2px 2px rgba(0,0,0,.42));image-rendering:pixelated;transition:left 8s linear,top 8s linear}
 #office-cat .cat-sprite{position:absolute;inset:0;background:url('assets/office-cat-sprite.png') -64px -192px/352px 1696px no-repeat;animation:catWalkRight .62s steps(1) infinite;transform-origin:50% 100%}
 #office-cat.cat-left .cat-sprite{animation-name:catWalkLeft}
 #office-cat.cat-up .cat-sprite{animation-name:catWalkUp}
@@ -500,7 +500,10 @@ let officeCat={x:51,y:33,rest:true};
 const CAT_POINTS=[[51,33],[46,41],[55,43],[37,75],[44,78],[52,74],[61,77],[68,72],[58,83],[42,84],[31,72]];
 function moveOfficeCat(){
   const el=document.getElementById('office-cat');if(!el)return;
-  const next=CAT_POINTS[Math.floor(Math.random()*CAT_POINTS.length)];
+  let next=CAT_POINTS[Math.floor(Math.random()*CAT_POINTS.length)];
+  for(let i=0;i<8&&Math.hypot(next[0]-officeCat.x,next[1]-officeCat.y)<10;i++){
+    next=CAT_POINTS[Math.floor(Math.random()*CAT_POINTS.length)];
+  }
   const dx=next[0]-officeCat.x;
   const dy=next[1]-officeCat.y;
   officeCat.x=next[0];officeCat.y=next[1];officeCat.rest=false;
@@ -510,7 +513,7 @@ function moveOfficeCat(){
   el.classList.remove('resting');
   el.style.left=officeCat.x+'%';el.style.top=officeCat.y+'%';
   clearTimeout(officeCat.restTimer);
-  officeCat.restTimer=setTimeout(()=>{if(Math.random()<.28)el.classList.add(el.classList.contains('cat-up')?'cat-lay-back':'cat-lay');el.classList.add('resting');officeCat.rest=true},16500);
+  officeCat.restTimer=setTimeout(()=>{if(Math.random()<.28)el.classList.add(el.classList.contains('cat-up')?'cat-lay-back':'cat-lay');el.classList.add('resting');officeCat.rest=true},8500);
 }
 setInterval(moveOfficeCat,42000);
 setTimeout(moveOfficeCat,6000);
