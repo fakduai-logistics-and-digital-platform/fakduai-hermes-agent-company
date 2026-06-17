@@ -383,25 +383,28 @@ for slug, acfg in agents_config.items():
         obj_lower = objective.lower()
         out_lower = last_output.lower()
         combo = obj_lower + ' ' + out_lower
-        location = 'desk'
+        explicit_location = pick_field(text, 'current location', pick_field(text, 'location', ''))
+        location = explicit_location.strip().lower() if explicit_location else 'desk'
         active_status = status in ('working', 'blocked')
-        if active_status and re.search(r'\b(location|room|join|joins|joined|at)\s*[:=-]?\s*meeting\b|\bin\s+(the\s+)?meeting\b', combo) and 'review' not in combo and 'spec' not in combo and 'dashboard' not in combo:
+        if location not in ('meeting', 'lounge', 'qa-room', 'devops-room', 'dev-room', 'support-desk', 'desk'):
+            location = 'desk'
+        if location == 'desk' and active_status and re.search(r'\b(location|room|join|joins|joined|at)\s*[:=-]?\s*meeting\b|\bin\s+(the\s+)?meeting\b', combo) and 'review' not in combo and 'spec' not in combo and 'dashboard' not in combo:
             location = 'meeting'
-        elif 'coffee' in combo or 'lounge' in combo:
+        elif location == 'desk' and ('coffee' in combo or 'lounge' in combo):
             location = 'lounge'
-        elif 'qa' in combo or 'test' in combo or 'bug' in combo or 'release' in combo or 'staging' in combo:
+        elif location == 'desk' and ('qa' in combo or 'test' in combo or 'bug' in combo or 'release' in combo or 'staging' in combo):
             location = 'qa-room' if slug in ('qa', 'frontend', 'backend') else 'devops-room' if slug == 'devops' else 'desk'
-        elif 'deploy' in combo or 'infra' in combo or 'ci/cd' in combo or 'monitor' in combo:
+        elif location == 'desk' and ('deploy' in combo or 'infra' in combo or 'ci/cd' in combo or 'monitor' in combo):
             location = 'devops-room'
-        elif status == 'working' and slug in ('ceo', 'cto', 'techlead', 'pm', 'ba', 'sa'):
+        elif location == 'desk' and status == 'working' and slug in ('ceo', 'cto', 'techlead', 'pm', 'ba', 'sa'):
             location = 'desk'  # stay at desk, not meeting
-        elif status == 'working' and slug in ('frontend', 'backend', 'designer', 'data'):
+        elif location == 'desk' and status == 'working' and slug in ('frontend', 'backend', 'designer', 'data'):
             location = 'dev-room'
-        elif status == 'working' and slug == 'qa':
+        elif location == 'desk' and status == 'working' and slug == 'qa':
             location = 'qa-room'
-        elif status == 'working' and slug == 'devops':
+        elif location == 'desk' and status == 'working' and slug == 'devops':
             location = 'devops-room'
-        elif status == 'working' and slug == 'support':
+        elif location == 'desk' and status == 'working' and slug == 'support':
             location = 'support-desk'
 
         thoughts = {

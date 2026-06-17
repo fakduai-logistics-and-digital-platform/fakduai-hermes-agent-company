@@ -350,6 +350,8 @@ class DashboardHandler(http.server.SimpleHTTPRequestHandler):
             with (activity_root / 'task-sends.ndjson').open('a', encoding='utf-8') as fh:
                 fh.write(json.dumps(event, ensure_ascii=False) + '\n')
             status_by_event = {
+                'team_meeting_started': 'idle',
+                'team_meeting_ended': 'idle',
                 'role_started': 'working',
                 'task_dispatched': 'working',
                 'followup_dispatched': 'working',
@@ -376,6 +378,7 @@ class DashboardHandler(http.server.SimpleHTTPRequestHandler):
                             f"- agent_id: {status_dir.name}\n"
                             f"- current objective: {event.get('task') or summary or 'Hermes company workflow'}\n"
                             f"- current status: done\n"
+                            f"- current location: {event.get('location') or 'desk'}\n"
                             f"- active blocker: none\n"
                             f"- next action: workflow completed\n"
                             f"- last meaningful output: {message[:1500] or summary[:500] or 'workflow completed'}\n",
@@ -390,6 +393,7 @@ class DashboardHandler(http.server.SimpleHTTPRequestHandler):
                     f"- agent_id: {agent}\n"
                     f"- current objective: {event.get('task') or summary or 'Hermes company workflow'}\n"
                     f"- current status: {status}\n"
+                    f"- current location: {event.get('location') or 'desk'}\n"
                     f"- active blocker: none\n"
                     f"- next action: {event.get('nextAction') or ('workflow completed' if status == 'done' else 'waiting for next handoff')}\n"
                     f"- last meaningful output: {message[:1500] or summary[:500] or status}\n",
