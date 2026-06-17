@@ -438,11 +438,14 @@ for slug, acfg in agents_config.items():
                 ('desk', 'เปิดเพลงฟังรอ PM'),
                 ('desk', 'ดูหนังสั้นพักสมอง'),
                 ('desk', 'หา article อ่าน'),
-                ('lounge', 'ชงกาแฟ'),
                 ('desk', 'จัดโต๊ะทำงาน'),
                 ('desk', 'เปิด playlist lofi'),
+                ('desk', 'เช็คข่าว tech'),
+                ('desk', 'พักสายตา'),
+                ('desk', 'อ่าน docs เล่น'),
+                ('lounge', 'ชงกาแฟ'),
+                ('lounge', 'ยืดเส้นยืดสาย'),
                 ('talk', 'เดินไปคุยเล่นกับเพื่อน'),
-                ('lounge', 'พักสายตา'),
             ]
             idle_location, idle_thought = idle_modes[hash((slug, updated)) % len(idle_modes)]
             if location == 'desk':
@@ -514,11 +517,14 @@ for slug, acfg in agents_config.items():
                     ('desk', 'เปิดเพลงฟังรอ PM'),
                     ('desk', 'ดูหนังสั้นพักสมอง'),
                     ('desk', 'หา article อ่าน'),
-                    ('lounge', 'ชงกาแฟ'),
                     ('desk', 'จัดโต๊ะทำงาน'),
                     ('desk', 'เปิด playlist lofi'),
+                    ('desk', 'เช็คข่าว tech'),
+                    ('desk', 'พักสายตา'),
+                    ('desk', 'อ่าน docs เล่น'),
+                    ('lounge', 'ชงกาแฟ'),
+                    ('lounge', 'ยืดเส้นยืดสาย'),
                     ('talk', 'เดินไปคุยเล่นกับเพื่อน'),
-                    ('lounge', 'พักสายตา'),
                 ]
                 idle_location, idle_thought = idle_modes[hash((slug, latest_task.get('ts', ''))) % len(idle_modes)]
                 if location == 'desk':
