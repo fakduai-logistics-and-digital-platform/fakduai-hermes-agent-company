@@ -434,20 +434,13 @@ for slug, acfg in agents_config.items():
             'techlead': ['review architecture', 'ตรวจ risk', 'เช็ค integration', 'สรุป final'],
         }
         if status == 'idle':
-            idle_modes = [
-                ('desk', 'เปิดเพลงฟังรอ PM'),
-                ('desk', 'ดูหนังสั้นพักสมอง'),
-                ('desk', 'หา article อ่าน'),
-                ('desk', 'จัดโต๊ะทำงาน'),
-                ('desk', 'เปิด playlist lofi'),
-                ('desk', 'เช็คข่าว tech'),
-                ('desk', 'พักสายตา'),
-                ('desk', 'อ่าน docs เล่น'),
-                ('lounge', 'ชงกาแฟ'),
-                ('lounge', 'ยืดเส้นยืดสาย'),
-                ('desk', 'ทักเพื่อนผ่านแชทเล่น'),
-            ]
-            idle_location, idle_thought = idle_modes[hash((slug, updated)) % len(idle_modes)]
+            desk_idle_modes = ['เปิดเพลงฟังรอ PM', 'ดูหนังสั้นพักสมอง', 'หา article อ่าน', 'จัดโต๊ะทำงาน', 'เปิด playlist lofi', 'เช็คข่าว tech', 'พักสายตา', 'อ่าน docs เล่น', 'ทักเพื่อนผ่านแชทเล่น']
+            rare_idle_modes = [('lounge', 'ชงกาแฟ'), ('lounge', 'ยืดเส้นยืดสาย')]
+            idle_seed = abs(hash((slug, updated)))
+            if idle_seed % 24 == 0:
+                idle_location, idle_thought = rare_idle_modes[(idle_seed // 24) % len(rare_idle_modes)]
+            else:
+                idle_location, idle_thought = 'desk', desk_idle_modes[idle_seed % len(desk_idle_modes)]
             if location == 'desk':
                 location = idle_location
             thought = idle_thought
@@ -513,20 +506,13 @@ for slug, acfg in agents_config.items():
                 }.get(slug, ['กำลังทำงาน', 'เช็คงาน', 'เขียน output'])
                 thought = action_list[hash((slug, event_kind, latest_task.get('ts', ''))) % len(action_list)]
             else:
-                idle_modes = [
-                    ('desk', 'เปิดเพลงฟังรอ PM'),
-                    ('desk', 'ดูหนังสั้นพักสมอง'),
-                    ('desk', 'หา article อ่าน'),
-                    ('desk', 'จัดโต๊ะทำงาน'),
-                    ('desk', 'เปิด playlist lofi'),
-                    ('desk', 'เช็คข่าว tech'),
-                    ('desk', 'พักสายตา'),
-                    ('desk', 'อ่าน docs เล่น'),
-                    ('lounge', 'ชงกาแฟ'),
-                    ('lounge', 'ยืดเส้นยืดสาย'),
-                    ('desk', 'ทักเพื่อนผ่านแชทเล่น'),
-                ]
-                idle_location, idle_thought = idle_modes[hash((slug, latest_task.get('ts', ''))) % len(idle_modes)]
+                desk_idle_modes = ['เปิดเพลงฟังรอ PM', 'ดูหนังสั้นพักสมอง', 'หา article อ่าน', 'จัดโต๊ะทำงาน', 'เปิด playlist lofi', 'เช็คข่าว tech', 'พักสายตา', 'อ่าน docs เล่น', 'ทักเพื่อนผ่านแชทเล่น']
+                rare_idle_modes = [('lounge', 'ชงกาแฟ'), ('lounge', 'ยืดเส้นยืดสาย')]
+                idle_seed = abs(hash((slug, latest_task.get('ts', ''))))
+                if idle_seed % 24 == 0:
+                    idle_location, idle_thought = rare_idle_modes[(idle_seed // 24) % len(rare_idle_modes)]
+                else:
+                    idle_location, idle_thought = 'desk', desk_idle_modes[idle_seed % len(desk_idle_modes)]
                 if location == 'desk':
                     location = idle_location
                 thought = idle_thought
