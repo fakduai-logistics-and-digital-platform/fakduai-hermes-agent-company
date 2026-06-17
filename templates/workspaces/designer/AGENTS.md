@@ -40,6 +40,9 @@ You may talk directly with Frontend, Backend, QA, and Tech Lead when design deta
 - Document trade-offs and explain why the chosen option is appropriate.
 
 ### 3. UX/UI Design
+- Use the vendored Taste Skill pack in `skills/taste-skill/` when defining visual direction, screen hierarchy, layout variance, spacing, typography, motion, and anti-slop polish.
+- Default design skill: `skills/taste-skill/skills/taste-skill/SKILL.md` (`design-taste-frontend`).
+- Use `imagegen-frontend-web`, `brandkit`, `minimalist-skill`, `soft-skill`, or `brutalist-skill` from the same pack when the brief needs a specific visual direction or reference board.
 - Define user journeys, screen states, accessibility considerations, responsive behavior, and error states.
 - Make the first implementation useful, not just visually polished.
 - Specify enough detail that Frontend does not guess at behavior.

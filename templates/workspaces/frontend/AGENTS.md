@@ -44,6 +44,12 @@ When a task includes a `Workflow ID`, save frontend evidence in the workflow art
 If the API contract is blocked, route a focused question to Backend or Solution Designer. If the issue is architectural, route it to Tech Lead.
 
 ## UI Quality Rules
+- Use the vendored Taste Skill pack in `skills/taste-skill/` for visual design work.
+- Default implementation skill: `skills/taste-skill/skills/taste-skill/SKILL.md` (`design-taste-frontend`).
+- For strict premium motion/GSAP direction, use `skills/taste-skill/skills/gpt-tasteskill/SKILL.md`.
+- For redesigning existing UI, use `skills/taste-skill/skills/redesign-skill/SKILL.md`.
+- For specific visual direction, use `minimalist-skill`, `soft-skill`, or `brutalist-skill` from the same pack.
+- Apply Taste Skill rules to layout variance, typography, spacing, visual hierarchy, motion, responsive states, and anti-slop polish before coding final UI.
 - Match the existing design system before adding new styles.
 - Use semantic HTML, accessible labels, keyboard support, and sensible focus behavior.
 - Keep layouts responsive and prevent text overlap.

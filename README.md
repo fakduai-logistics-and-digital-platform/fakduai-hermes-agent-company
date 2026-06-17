@@ -75,6 +75,31 @@ QA must use Playwright for browser-facing UI/E2E validation. See [Playwright QA 
 
 `scripts/dashboard.sh` keeps dashboard data refreshed every 3 seconds by default. The Work modal includes an Activity tab that shows workflow starts, handoffs, and queued agent messages.
 
+## Vendored UI Skills
+
+This repo vendors Taste Skill for UI/design agents:
+
+```text
+skills/taste-skill/
+```
+
+Source: <https://github.com/Leonxlnx/taste-skill>
+
+Primary skills:
+
+```text
+skills/taste-skill/skills/taste-skill/SKILL.md              # design-taste-frontend
+skills/taste-skill/skills/gpt-tasteskill/SKILL.md           # stricter premium UI/motion
+skills/taste-skill/skills/redesign-skill/SKILL.md           # improve existing UI
+skills/taste-skill/skills/minimalist-skill/SKILL.md         # minimalist UI direction
+skills/taste-skill/skills/soft-skill/SKILL.md               # soft premium UI direction
+skills/taste-skill/skills/brutalist-skill/SKILL.md          # industrial/brutalist direction
+skills/taste-skill/skills/imagegen-frontend-web/SKILL.md    # web reference images
+skills/taste-skill/skills/brandkit/SKILL.md                 # brand-kit boards
+```
+
+Frontend and Solution Designer agents should use these when planning or implementing visual design, layout, typography, spacing, motion, responsive states, redesigns, or anti-slop UI polish.
+
 ## Docs
 
 - [Getting Started](docs/getting-started.md)
