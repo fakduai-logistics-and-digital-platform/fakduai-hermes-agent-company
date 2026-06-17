@@ -363,6 +363,7 @@ class DashboardHandler(http.server.SimpleHTTPRequestHandler):
                 'followup_completed': 'done',
                 'pm_review_completed': 'done',
                 'workflow_completed': 'done',
+                'role_idle': 'idle',
             }
             status = event.get('status') or status_by_event.get(event_type, 'idle')
             if event_type == 'workflow_completed':
