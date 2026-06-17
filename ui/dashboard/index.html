@@ -49,7 +49,7 @@ body.wide #stage-map{max-height:calc(100vw / 1.5)}
 #meeting-glow{display:none}
 #meeting-glow.on{display:none}
 #agent-layer{position:absolute;inset:0;pointer-events:none;z-index:3}
-#office-cat{position:absolute;left:29%;top:78%;width:32px;height:32px;z-index:3;transform:translate(-50%,-100%) scale(2.15);transform-origin:50% 100%;pointer-events:none;filter:drop-shadow(0 2px 2px rgba(0,0,0,.42));image-rendering:pixelated;transition:left 16s linear,top 16s linear}
+#office-cat{position:absolute;left:51%;top:33%;width:32px;height:32px;z-index:3;transform:translate(-50%,-100%) scale(2.15);transform-origin:50% 100%;pointer-events:none;filter:drop-shadow(0 2px 2px rgba(0,0,0,.42));image-rendering:pixelated;transition:left 16s linear,top 16s linear}
 #office-cat .cat-sprite{position:absolute;inset:0;background:url('assets/office-cat-sprite.png') -64px -192px/352px 1696px no-repeat;animation:catWalkRight .62s steps(1) infinite;transform-origin:50% 100%}
 #office-cat.cat-left .cat-sprite{animation-name:catWalkLeft}
 #office-cat.cat-up .cat-sprite{animation-name:catWalkUp}
@@ -60,12 +60,14 @@ body.wide #stage-map{max-height:calc(100vw / 1.5)}
 #office-cat.resting.cat-back .cat-sprite,#office-cat.resting.cat-up .cat-sprite{background-position:-32px 0}
 #office-cat.resting.cat-down .cat-sprite{background-position:0 0}
 #office-cat.resting.cat-lay .cat-sprite{animation:catLayFront 1.6s steps(1) infinite}
+#office-cat.resting.cat-lay-back .cat-sprite{animation:catLayBack 1.6s steps(1) infinite}
 #office-cat .cat-bubble{position:absolute;left:70%;top:-80%;padding:1px 3px;border-radius:5px;background:rgba(15,23,42,.82);border:1px solid rgba(255,255,255,.14);color:#fde68a;font-size:4px;font-weight:900;white-space:nowrap;opacity:.78;animation:catBubble 7s ease-in-out infinite;transform-origin:0 100%}
 @keyframes catWalkDown{0%{background-position:0 -128px}33%{background-position:-32px -128px}66%{background-position:-64px -128px}100%{background-position:0 -128px}}
 @keyframes catWalkUp{0%{background-position:0 -160px}33%{background-position:-32px -160px}66%{background-position:-64px -160px}100%{background-position:0 -160px}}
 @keyframes catWalkRight{0%{background-position:-64px -192px}33%{background-position:-96px -192px}66%{background-position:-128px -192px}100%{background-position:-64px -192px}}
 @keyframes catWalkLeft{0%{background-position:-64px -224px}33%{background-position:-96px -224px}66%{background-position:-128px -224px}100%{background-position:-64px -224px}}
 @keyframes catLayFront{0%{background-position:0 -384px}33%{background-position:-32px -384px}66%{background-position:-64px -384px}100%{background-position:0 -384px}}
+@keyframes catLayBack{0%{background-position:0 -448px}33%{background-position:-32px -448px}66%{background-position:-64px -448px}100%{background-position:0 -448px}}
 @keyframes catIdleSprite{0%,100%{background-position:0 0}}
 @keyframes catBubble{0%,62%,100%{opacity:.05;transform:translateY(2px)}10%,34%{opacity:.85;transform:translateY(0)}}
 #desk-occlusion-layer{position:absolute;inset:0;pointer-events:none;z-index:4}
@@ -494,21 +496,21 @@ let W,H,cam={x:0,y:0,z:1.5};
 let drag={on:false,sx:0,sy:0,cx:0,cy:0};
 let agents={},ROOMS=[],HOMES={},ACOL={},CLOTH={};
 let kanbanData=[],evidenceData=[],activityData={activities:[],workflows:[]};
-let officeCat={x:29,y:78,rest:true};
-const CAT_POINTS=[[29,78],[37,75],[44,78],[52,74],[61,77],[68,72],[58,83],[42,84],[31,72]];
+let officeCat={x:51,y:33,rest:true};
+const CAT_POINTS=[[51,33],[46,41],[55,43],[37,75],[44,78],[52,74],[61,77],[68,72],[58,83],[42,84],[31,72]];
 function moveOfficeCat(){
   const el=document.getElementById('office-cat');if(!el)return;
   const next=CAT_POINTS[Math.floor(Math.random()*CAT_POINTS.length)];
   const dx=next[0]-officeCat.x;
   const dy=next[1]-officeCat.y;
   officeCat.x=next[0];officeCat.y=next[1];officeCat.rest=false;
-  el.classList.remove('cat-left','cat-right','cat-up','cat-down','cat-back','cat-lay');
+  el.classList.remove('cat-left','cat-right','cat-up','cat-down','cat-back','cat-lay','cat-lay-back');
   if(Math.abs(dy)>Math.abs(dx))el.classList.add(dy<0?'cat-up':'cat-down');
   else el.classList.add(dx<0?'cat-left':'cat-right');
   el.classList.remove('resting');
   el.style.left=officeCat.x+'%';el.style.top=officeCat.y+'%';
   clearTimeout(officeCat.restTimer);
-  officeCat.restTimer=setTimeout(()=>{if(Math.random()<.28)el.classList.add('cat-lay');el.classList.add('resting');officeCat.rest=true},16500);
+  officeCat.restTimer=setTimeout(()=>{if(Math.random()<.28)el.classList.add(el.classList.contains('cat-up')?'cat-lay-back':'cat-lay');el.classList.add('resting');officeCat.rest=true},16500);
 }
 setInterval(moveOfficeCat,42000);
 setTimeout(moveOfficeCat,6000);
