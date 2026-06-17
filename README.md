@@ -295,7 +295,7 @@ Source: <https://github.com/Leonxlnx/taste-skill>
 Primary skills:
 
 ```text
-skills/taste-skill/skills/taste-skill/SKILL.md              # design-taste-frontend
+skills/taste-skill/skills/taste-skill/SKILL.md              # design-taste-frontend / taste-design
 skills/taste-skill/skills/gpt-tasteskill/SKILL.md           # stricter premium UI/motion
 skills/taste-skill/skills/redesign-skill/SKILL.md           # improve existing UI
 skills/taste-skill/skills/minimalist-skill/SKILL.md         # minimalist UI direction
