@@ -227,6 +227,51 @@ Source: <https://github.com/multica-ai/andrej-karpathy-skills/blob/main/skills/k
 
 All workspace agents are instructed to use it for coding, reviewing, refactoring, debugging, and implementation planning. It biases agents toward explicit assumptions, simple solutions, surgical edits, and verifiable success criteria.
 
+This repo also vendors Matt Pocock skills for backend and architecture work:
+
+```text
+skills/mattpocock/
+```
+
+Source: <https://github.com/mattpocock/skills/tree/main/skills>
+
+Recommended backend set:
+
+```text
+skills/mattpocock/engineering/grill-with-docs/SKILL.md
+skills/mattpocock/engineering/tdd/SKILL.md
+skills/mattpocock/engineering/diagnosing-bugs/SKILL.md
+skills/mattpocock/engineering/codebase-design/SKILL.md
+skills/mattpocock/engineering/domain-modeling/SKILL.md
+skills/mattpocock/engineering/setup-matt-pocock-skills/SKILL.md
+skills/mattpocock/engineering/to-prd/SKILL.md
+skills/mattpocock/engineering/to-issues/SKILL.md
+skills/mattpocock/engineering/improve-codebase-architecture/SKILL.md
+skills/mattpocock/misc/git-guardrails-claude-code/SKILL.md
+```
+
+Backend usage guide:
+
+```text
+New backend feature/API:
+  use grill-with-docs, then domain-modeling when business language matters
+
+Implementation:
+  use tdd; one vertical slice at a time, red-green-refactor
+
+Bug:
+  use diagnosing-bugs; reproduce -> minimize -> hypothesize -> instrument -> fix -> regression-test
+
+Architecture cleanup:
+  use codebase-design or improve-codebase-architecture
+
+PRD/issues:
+  use to-prd and to-issues
+
+Git safety setup:
+  use git-guardrails-claude-code when explicitly asked
+```
+
 ## Vendored UI Skills
 
 This repo vendors Taste Skill for UI/design agents:
