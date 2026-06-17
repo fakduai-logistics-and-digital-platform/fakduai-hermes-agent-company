@@ -115,7 +115,7 @@ TASK_TALK_SECONDS = int(os.environ.get('DASHBOARD_TASK_TALK_SECONDS', '180'))
 activity_root = Path(os.environ.get('ACTIVITY_ROOT', str(state_root / 'shared' / 'company-activity')))
 
 def task_event_preview(event):
-    text = re.sub(r'\s+', ' ', event.get('summary', '') or '').strip()
+    text = re.sub(r'\s+', ' ', (event.get('message') or event.get('summary') or '')).strip()
     return text[:160] or f"Task sent to {event.get('to', 'agent')}"
 
 def task_event_age_seconds(event):
@@ -161,7 +161,13 @@ def load_task_send_events():
 task_send_events = load_task_send_events()
 latest_task_by_agent = {}
 for event in task_send_events:
-    target = event.get('to')
+    event_kind = str(event.get('kind') or event.get('type') or '').lower()
+    # Hermes completion/handoff events are displayed on the speaking agent,
+    # not only the receiving route target.
+    if event_kind in {'role_completed', 'peer_handoff', 'followup_completed', 'pm_review_completed', 'workflow_completed'}:
+        target = event.get('agent') or event.get('from') or event.get('to')
+    else:
+        target = event.get('to') or event.get('agent')
     if target and target not in latest_task_by_agent:
         latest_task_by_agent[target] = event
 
@@ -424,6 +430,7 @@ for slug, acfg in agents_config.items():
             'summary': task_preview,
             'delivery': latest_task.get('delivery', ''),
             'detail': latest_task.get('detail', ''),
+            'message': latest_task.get('message', ''),
             'sentAt': latest_task.get('ts', ''),
             'ageSeconds': task_age,
             'isRecent': bool(task_is_recent),
@@ -438,7 +445,11 @@ for slug, acfg in agents_config.items():
                 location = 'meeting'
             else:
                 location = 'desk'
-            thought = f"New task: {task_preview[:72]}"
+            event_message = re.sub(r'\s+', ' ', (latest_task.get('message') or latest_task.get('summary') or '')).strip()
+            if event_kind in {'role_completed', 'peer_handoff', 'followup_completed', 'pm_review_completed', 'workflow_completed'} and event_message:
+                thought = event_message[:180]
+            else:
+                thought = f"New task: {task_preview[:72]}"
             if event_kind in completion_events:
                 status = 'done'
             elif event_kind in working_events and status in ('idle', 'offline', 'done'):

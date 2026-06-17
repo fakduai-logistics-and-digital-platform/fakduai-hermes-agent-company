@@ -687,8 +687,8 @@ function hasConversation(list,acd){
 function shortWork(a){
   const n=norm(a.status);
   const sig={working:'⚡',blocked:'!',done:'✓',offline:'○',idle:'●'}[n]||'●';
-  const recent=a.recentTask&&a.recentTask.isRecent?a.recentTask.summary:'';
-  const raw=[recent,a.speech,a.thought,a.nextAction,a.objective,a.lastOutput].map(v=>(v||'').toString().trim()).find(v=>v&&v!=='N/A'&&v!=='No status'&&v!=='not online yet'&&v!=='Waiting for next task');
+  const recent=a.recentTask&&a.recentTask.isRecent?(a.recentTask.message||a.recentTask.summary):'';
+  const raw=[a.speech,a.thought,recent,a.lastOutput,a.nextAction,a.objective].map(v=>(v||'').toString().trim()).find(v=>v&&v!=='N/A'&&v!=='No status'&&v!=='not online yet'&&v!=='Waiting for next task');
   const fallback={working:'กำลังทำงาน',blocked:'ติด blocker',done:'เสร็จแล้ว',offline:'offline',idle:'standby'}[n]||'standby';
   const txt=(raw||fallback).replace(/\s+/g,' ').slice(0,48);
   return{sig,txt,n};
@@ -1088,7 +1088,7 @@ function renderActivityChat(){
   el.className=minimized?'min':'';
   el.innerHTML=`<div class="chh"><span class="cht">Chat</span><span class="chact"><span class="chlive">${rows.length}</span><button class="chmin" onclick="toggleActivityChat(event)">${minimized?'+':'−'}</button></span></div><div class="chbody">${rows.map(a=>{
     const route=[a.from,a.to].filter(Boolean).join(' -> ')||a.type||a.kind||'activity';
-    const msg=(a.summary||'').replace(/\s+/g,' ').trim();
+    const msg=(a.message||a.summary||'').replace(/\s+/g,' ').trim();
     return`<div class="chr"><div class="chmeta"><span class="route">${esc(route)}</span><span class="chtime">${fmtDT(a.ts)||''}</span></div><div class="chtext">${esc(msg||a.workflowId||'Activity updated')}</div></div>`;
   }).join('')}</div>`;
 }

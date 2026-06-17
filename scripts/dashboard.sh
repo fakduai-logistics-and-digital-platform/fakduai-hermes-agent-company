@@ -333,12 +333,14 @@ class DashboardHandler(http.server.SimpleHTTPRequestHandler):
             ts = event.get('ts') or time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())
             agent = str(event.get('to') or event.get('agent') or '').strip()
             summary = str(event.get('summary') or event.get('task') or event.get('status') or '').strip()
+            message = str(event.get('message') or event.get('detail') or summary).strip()
             event.setdefault('ts', ts)
             event_type = str(event.get('type') or 'task_sent')
             event.setdefault('type', event_type)
             event.setdefault('kind', event_type)
             event.setdefault('from', event.get('from') or 'hermes')
             event.setdefault('summary', summary)
+            event.setdefault('message', message)
             event.setdefault('workflowId', event.get('workflowId') or 'hermes-company')
             event.setdefault('sendId', event.get('sendId') or f"hermes-{int(time.time()*1000)}")
 
@@ -372,7 +374,7 @@ class DashboardHandler(http.server.SimpleHTTPRequestHandler):
                             f"- current status: done\n"
                             f"- active blocker: none\n"
                             f"- next action: workflow completed\n"
-                            f"- last meaningful output: {summary[:500] or 'workflow completed'}\n",
+                            f"- last meaningful output: {message[:1500] or summary[:500] or 'workflow completed'}\n",
                             encoding='utf-8',
                         )
             if agent:
@@ -386,7 +388,7 @@ class DashboardHandler(http.server.SimpleHTTPRequestHandler):
                     f"- current status: {status}\n"
                     f"- active blocker: none\n"
                     f"- next action: {event.get('nextAction') or ('workflow completed' if status == 'done' else 'waiting for next handoff')}\n"
-                    f"- last meaningful output: {summary[:500] or status}\n",
+                    f"- last meaningful output: {message[:1500] or summary[:500] or status}\n",
                     encoding='utf-8',
                 )
             self.append_activity(event)
