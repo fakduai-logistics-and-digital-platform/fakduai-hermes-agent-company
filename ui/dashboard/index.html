@@ -49,6 +49,11 @@ body.wide #stage-map{max-height:calc(100vw / 1.5)}
 #meeting-glow{display:none}
 #meeting-glow.on{display:none}
 #agent-layer{position:absolute;inset:0;pointer-events:none;z-index:3}
+#office-cat{position:absolute;left:29%;top:78%;width:5.2%;min-width:42px;z-index:3;transform:translate(-50%,-100%);pointer-events:none;filter:drop-shadow(0 6px 7px rgba(0,0,0,.35));animation:catNap 4.8s ease-in-out infinite}
+#office-cat img{width:100%;display:block}
+#office-cat .cat-bubble{position:absolute;left:72%;top:-18%;padding:2px 5px;border-radius:8px;background:rgba(15,23,42,.82);border:1px solid rgba(255,255,255,.14);color:#fde68a;font-size:clamp(7px,.62vw,10px);font-weight:900;white-space:nowrap;opacity:.85;animation:catBubble 6s ease-in-out infinite}
+@keyframes catNap{0%,100%{transform:translate(-50%,-100%) rotate(-1deg)}50%{transform:translate(-50%,-101.5%) rotate(1deg)}}
+@keyframes catBubble{0%,55%,100%{opacity:.15;transform:translateY(2px)}12%,35%{opacity:.9;transform:translateY(0)}}
 #desk-occlusion-layer{position:absolute;inset:0;pointer-events:none;z-index:4}
 #layout-edit-layer{display:none;position:absolute;inset:0;pointer-events:none;z-index:8}
 body.layout-editing #layout-edit-layer{display:block;pointer-events:auto;cursor:crosshair}
@@ -400,6 +405,7 @@ body.layout-editing .layout-main{padding:8px}
     <div id="meeting-glow"></div>
     <div id="layout-edit-layer" onpointerdown="startLayoutDrag(event)"></div>
     <div id="agent-layer"></div>
+    <div id="office-cat"><img src="assets/office-cat.svg" alt="office cat"><span class="cat-bubble">meow</span></div>
     <div id="desk-occlusion-layer"></div>
   </div>
 </div>
