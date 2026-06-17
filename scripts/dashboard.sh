@@ -14,6 +14,7 @@ PORT="${PORT:-8090}"
 REFRESH_INTERVAL="${REFRESH_INTERVAL:-1}"
 AUTO_REFRESH="${AUTO_REFRESH:-1}"
 STALE_AFTER_SECONDS="${STALE_AFTER_SECONDS:-10}"
+CLEAR_COMPANY_STATE_ON_START="${CLEAR_COMPANY_STATE_ON_START:-1}"
 
 # Hard-coded canonical fallback — always valid inside the sandbox
 _CANONICAL_ROOT="/home/node/.openclaw"
@@ -87,6 +88,20 @@ done
 
 cd "$REPO_ROOT"
 export REPO_ROOT SHARED_ROOT WORKFLOW_ROOT OUTBOX_ROOT ACTIVITY_ROOT
+
+clear_company_dashboard_state() {
+  echo "==> Clearing previous company dashboard state"
+  rm -rf /tmp/openclaw-dashboard /tmp/openclaw-dashboard-build 2>/dev/null || true
+  rm -f "$ACTIVITY_ROOT"/*.ndjson "$ACTIVITY_ROOT"/*.json "$ACTIVITY_ROOT"/STATUS.md 2>/dev/null || true
+  rm -rf "$WORKFLOW_ROOT"/* "$OUTBOX_ROOT"/* 2>/dev/null || true
+  if [ -d "$SHARED_ROOT" ]; then
+    find "$SHARED_ROOT" -mindepth 2 -maxdepth 2 \( -name 'STATUS.md' -o -name 'status.json' \) -type f -delete 2>/dev/null || true
+  fi
+}
+
+if [ "$ONCE" != "1" ] && [ "$CLEAR_COMPANY_STATE_ON_START" = "1" ]; then
+  clear_company_dashboard_state
+fi
 
 # ---- Serve from local /tmp to avoid fakeowner mount cache coherence issues ----
 SERVE_DIR="/tmp/openclaw-dashboard"
