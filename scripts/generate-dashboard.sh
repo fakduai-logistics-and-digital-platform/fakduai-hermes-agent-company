@@ -403,7 +403,7 @@ for slug, acfg in agents_config.items():
         explicit_location = pick_field(text, 'current location', pick_field(text, 'location', ''))
         location = explicit_location.strip().lower() if explicit_location else 'desk'
         active_status = status in ('working', 'blocked')
-        if location not in ('meeting', 'lounge', 'qa-room', 'devops-room', 'dev-room', 'support-desk', 'desk'):
+        if location not in ('meeting', 'talk', 'lounge', 'qa-room', 'devops-room', 'dev-room', 'support-desk', 'desk'):
             location = 'desk'
         if location == 'desk' and active_status and re.search(r'\b(location|room|join|joins|joined|at)\s*[:=-]?\s*meeting\b|\bin\s+(the\s+)?meeting\b', combo) and 'review' not in combo and 'spec' not in combo and 'dashboard' not in combo:
             location = 'meeting'
@@ -424,13 +424,24 @@ for slug, acfg in agents_config.items():
         elif location == 'desk' and status == 'working' and slug == 'support':
             location = 'support-desk'
 
-        thoughts = {
-            'working': [objective, last_output[:80] if last_output else 'working...', 'focus mode'],
-            'idle': ['idle', 'waiting for work', 'ready'],
-            'blocked': ['blocked...', 'needs help'],
+        idle_actions = ['เปิดเพลงฟังรอ PM', 'ดูหนังสั้นพักสมอง', 'หา article อ่าน', 'ชงกาแฟ', 'จัดโต๊ะทำงาน', 'เปิด playlist lofi', 'เช็คข่าว tech', 'พักสายตา']
+        working_actions = {
+            'pm': ['แตก requirement', 'จัดแผนงาน', 'ตรวจ handoff', 'รอ feedback ทีม'],
+            'designer': ['วาด wireframe', 'จัด moodboard', 'เช็ค UX flow', 'เตรียม UI spec'],
+            'frontend': ['เขียน UI', 'ต่อ interaction', 'เช็ค responsive', 'รัน preview'],
+            'backend': ['เขียน API/server', 'เช็ค runtime', 'เตรียม deploy path', 'ทดสอบ endpoint'],
+            'qa': ['เขียน test checklist', 'กดทดสอบ flow', 'หา edge case', 'ตรวจ preview'],
+            'techlead': ['review architecture', 'ตรวจ risk', 'เช็ค integration', 'สรุป final'],
         }
-        thought_list = thoughts.get(status, ['...'])
-        thought = thought_list[hash(updated) % len(thought_list)]
+        if status == 'idle':
+            thought = idle_actions[hash((slug, updated)) % len(idle_actions)]
+        elif status == 'working':
+            action_list = working_actions.get(slug, ['กำลังทำงาน', 'เช็คงาน', 'เขียน output'])
+            thought = action_list[hash((slug, objective, updated)) % len(action_list)]
+        elif status == 'blocked':
+            thought = 'blocked... needs help'
+        else:
+            thought = last_output[:80] if last_output else 'ready'
     else:
         text = ''
         next_action = ''
@@ -461,15 +472,33 @@ for slug, acfg in agents_config.items():
             event_kind = str(latest_task.get('kind') or latest_task.get('type') or '').lower()
             completion_events = {'role_completed', 'peer_handoff', 'followup_completed', 'pm_review_completed', 'workflow_completed', 'message_completed'}
             working_events = {'role_started', 'task_dispatched', 'followup_dispatched', 'pm_review_started', 'review_started', 'message_started', 'message_delta'}
-            if 'meeting' in event_kind:
+            explicit_event_location = str(latest_task.get('location') or '').strip().lower()
+            if explicit_event_location in ('meeting', 'talk', 'lounge', 'qa-room', 'devops-room', 'dev-room', 'support-desk', 'desk'):
+                location = explicit_event_location
+            elif 'meeting' in event_kind:
                 location = 'meeting'
+            elif slug in ('frontend', 'backend') and event_kind in working_events:
+                location = 'dev-room'
+            elif slug == 'qa' and event_kind in working_events:
+                location = 'qa-room'
             else:
                 location = 'desk'
             event_message = re.sub(r'\s+', ' ', (latest_task.get('message') or latest_task.get('summary') or '')).strip()
             if event_message and (event_kind.startswith('message_') or event_kind in {'role_completed', 'peer_handoff', 'followup_completed', 'pm_review_completed', 'workflow_completed'}):
                 thought = event_message[:180]
+            elif event_kind in working_events:
+                action_list = {
+                    'pm': ['แตก requirement', 'จัดแผนงาน', 'ตรวจ handoff', 'รอ feedback ทีม'],
+                    'designer': ['วาด wireframe', 'จัด moodboard', 'เช็ค UX flow', 'เตรียม UI spec'],
+                    'frontend': ['เขียน UI', 'ต่อ interaction', 'เช็ค responsive', 'รัน preview'],
+                    'backend': ['เขียน API/server', 'เช็ค runtime', 'เตรียม deploy path', 'ทดสอบ endpoint'],
+                    'qa': ['เขียน test checklist', 'กดทดสอบ flow', 'หา edge case', 'ตรวจ preview'],
+                    'techlead': ['review architecture', 'ตรวจ risk', 'เช็ค integration', 'สรุป final'],
+                }.get(slug, ['กำลังทำงาน', 'เช็คงาน', 'เขียน output'])
+                thought = action_list[hash((slug, event_kind, latest_task.get('ts', ''))) % len(action_list)]
             else:
-                thought = f"New task: {task_preview[:72]}"
+                idle_actions = ['เปิดเพลงฟังรอ PM', 'ดูหนังสั้นพักสมอง', 'หา article อ่าน', 'ชงกาแฟ', 'จัดโต๊ะทำงาน', 'เปิด playlist lofi', 'เช็คข่าว tech', 'พักสายตา']
+                thought = idle_actions[hash((slug, latest_task.get('ts', ''))) % len(idle_actions)]
             if event_kind in completion_events:
                 status = 'done'
             elif event_kind in working_events and status in ('idle', 'offline', 'done'):
