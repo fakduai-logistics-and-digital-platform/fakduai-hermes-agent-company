@@ -1637,7 +1637,10 @@ function stagePos(a){
   const p=pos.base[a.id]||pos.fallback.base||[50,50];
   if(intent==='visit'){
     const targetId=(a.location||'').slice(6);
-    const tp=pos.base[targetId]||pos.fallback.base||[50,50];
+    const target=(_ad||[]).find(x=>x.id===targetId);
+    const targetIntent=target?stageIntent(target):'base';
+    const source=targetIntent==='meeting'?pos.meeting:pos.base;
+    const tp=source[targetId]||pos.base[targetId]||pos.fallback.base||[50,50];
     return [tp[0]+1.35,tp[1]+.65];
   }
   if(intent==='talk'){
