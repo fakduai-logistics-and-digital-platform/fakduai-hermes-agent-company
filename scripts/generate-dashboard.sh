@@ -114,8 +114,25 @@ def parse_ts(value):
 TASK_TALK_SECONDS = int(os.environ.get('DASHBOARD_TASK_TALK_SECONDS', '180'))
 activity_root = Path(os.environ.get('ACTIVITY_ROOT', str(state_root / 'shared' / 'company-activity')))
 
+def clean_task_text(value):
+    text = str(value or '').replace('\r', '\n')
+    lines = []
+    for line in text.splitlines():
+        stripped = line.strip()
+        if re.fullmatch(r'\d{1,2}:\d{2}', stripped):
+            continue
+        if re.fullmatch(r':\d{2}', stripped):
+            continue
+        lines.append(stripped)
+    cleaned = re.sub(r'\s+', ' ', ' '.join(lines)).strip()
+    if re.fullmatch(r'\d{1,2}:\d{2}|:\d{2}', cleaned or ''):
+        return ''
+    return cleaned
+
 def task_event_preview(event):
-    text = re.sub(r'\s+', ' ', (event.get('message') or event.get('summary') or '')).strip()
+    text = clean_task_text(event.get('task'))
+    if not text:
+        text = re.sub(r'\s+', ' ', (event.get('summary') or event.get('message') or '')).strip()
     return text[:160] or f"Task sent to {event.get('to', 'agent')}"
 
 def task_event_age_seconds(event):
@@ -543,7 +560,7 @@ for slug, acfg in agents_config.items():
         continue
     text = status_file.read_text(encoding='utf-8')
 
-    task = (parse_kv(text, 'Task') or
+    task = clean_task_text(parse_kv(text, 'Task') or
             parse_kv(text, 'Current Task') or
             pick_field(text, 'current objective', '') or
             pick_field(text, 'Current Objective', '') or
@@ -556,7 +573,7 @@ for slug, acfg in agents_config.items():
         for line in text.splitlines():
             s = line.strip()
             if not s or s.startswith('#') or s.startswith('---') or s.startswith('-'): continue
-            task = s[:80]
+            task = clean_task_text(s[:80])
             break
     if not task:
         continue
@@ -576,7 +593,7 @@ for slug, acfg in agents_config.items():
             raw_status = 'working'
             status_literal = 'working'
         if task in ('Waiting for next task', 'No status', 'initialized and waiting for tasks'):
-            task = recent_card_preview
+            task = clean_task_text(recent_card_preview)
         if not next_action:
             next_action = recent_card_preview
         if not last_output:
@@ -794,7 +811,7 @@ for slug, acfg in agents_config.items():
     cards.append({
         'id': slug,
         'workItem': work_item,
-        'title': task[:80],
+        'title': (clean_task_text(task) or f"{role} active task")[:80],
         'owner': owner_name,
         'ownerId': slug,
         'emoji': owner_emoji,
