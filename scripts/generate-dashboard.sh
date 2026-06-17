@@ -435,12 +435,8 @@ for slug, acfg in agents_config.items():
         }
         if status == 'idle':
             desk_idle_modes = ['เปิดเพลงฟังรอ PM', 'ดูหนังสั้นพักสมอง', 'หา article อ่าน', 'จัดโต๊ะทำงาน', 'เปิด playlist lofi', 'เช็คข่าว tech', 'พักสายตา', 'อ่าน docs เล่น', 'ทักเพื่อนผ่านแชทเล่น']
-            rare_idle_modes = [('lounge', 'ชงกาแฟ'), ('lounge', 'ยืดเส้นยืดสาย')]
             idle_seed = abs(hash((slug, updated)))
-            if idle_seed % 24 == 0:
-                idle_location, idle_thought = rare_idle_modes[(idle_seed // 24) % len(rare_idle_modes)]
-            else:
-                idle_location, idle_thought = 'desk', desk_idle_modes[idle_seed % len(desk_idle_modes)]
+            idle_location, idle_thought = 'desk', desk_idle_modes[idle_seed % len(desk_idle_modes)]
             if location == 'desk':
                 location = idle_location
             thought = idle_thought
@@ -507,12 +503,8 @@ for slug, acfg in agents_config.items():
                 thought = action_list[hash((slug, event_kind, latest_task.get('ts', ''))) % len(action_list)]
             else:
                 desk_idle_modes = ['เปิดเพลงฟังรอ PM', 'ดูหนังสั้นพักสมอง', 'หา article อ่าน', 'จัดโต๊ะทำงาน', 'เปิด playlist lofi', 'เช็คข่าว tech', 'พักสายตา', 'อ่าน docs เล่น', 'ทักเพื่อนผ่านแชทเล่น']
-                rare_idle_modes = [('lounge', 'ชงกาแฟ'), ('lounge', 'ยืดเส้นยืดสาย')]
                 idle_seed = abs(hash((slug, latest_task.get('ts', ''))))
-                if idle_seed % 24 == 0:
-                    idle_location, idle_thought = rare_idle_modes[(idle_seed // 24) % len(rare_idle_modes)]
-                else:
-                    idle_location, idle_thought = 'desk', desk_idle_modes[idle_seed % len(desk_idle_modes)]
+                idle_location, idle_thought = 'desk', desk_idle_modes[idle_seed % len(desk_idle_modes)]
                 if location == 'desk':
                     location = idle_location
                 thought = idle_thought
@@ -568,17 +560,6 @@ try:
             visitor['speech'] = visitor['thought']
             target['thought'] = f"คุยเล่นกับ {visitor.get('name') or visitor.get('id')} ที่โต๊ะ"
             target['speech'] = target['thought']
-    elif len(idle_desk) >= 2 and minute_in_bucket in (4, 5) and bucket % 17 == 0:
-        first_idx = bucket % len(idle_desk)
-        second_idx = (first_idx + 1) % len(idle_desk)
-        first = idle_desk[first_idx]
-        second = idle_desk[second_idx]
-        first['location'] = 'meeting'
-        second['location'] = 'meeting'
-        first['thought'] = f"คุยเล่นกับ {second.get('name') or second.get('id')} ในห้องประชุม"
-        second['thought'] = f"คุยเล่นกับ {first.get('name') or first.get('id')} ในห้องประชุม"
-        first['speech'] = first['thought']
-        second['speech'] = second['thought']
 except Exception:
     pass
 
