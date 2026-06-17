@@ -434,7 +434,20 @@ for slug, acfg in agents_config.items():
             'techlead': ['review architecture', 'ตรวจ risk', 'เช็ค integration', 'สรุป final'],
         }
         if status == 'idle':
-            thought = idle_actions[hash((slug, updated)) % len(idle_actions)]
+            idle_modes = [
+                ('desk', 'เปิดเพลงฟังรอ PM'),
+                ('desk', 'ดูหนังสั้นพักสมอง'),
+                ('desk', 'หา article อ่าน'),
+                ('lounge', 'ชงกาแฟ'),
+                ('desk', 'จัดโต๊ะทำงาน'),
+                ('desk', 'เปิด playlist lofi'),
+                ('talk', 'เดินไปคุยเล่นกับเพื่อน'),
+                ('lounge', 'พักสายตา'),
+            ]
+            idle_location, idle_thought = idle_modes[hash((slug, updated)) % len(idle_modes)]
+            if location == 'desk':
+                location = idle_location
+            thought = idle_thought
         elif status == 'working':
             action_list = working_actions.get(slug, ['กำลังทำงาน', 'เช็คงาน', 'เขียน output'])
             thought = action_list[hash((slug, objective, updated)) % len(action_list)]
@@ -497,8 +510,20 @@ for slug, acfg in agents_config.items():
                 }.get(slug, ['กำลังทำงาน', 'เช็คงาน', 'เขียน output'])
                 thought = action_list[hash((slug, event_kind, latest_task.get('ts', ''))) % len(action_list)]
             else:
-                idle_actions = ['เปิดเพลงฟังรอ PM', 'ดูหนังสั้นพักสมอง', 'หา article อ่าน', 'ชงกาแฟ', 'จัดโต๊ะทำงาน', 'เปิด playlist lofi', 'เช็คข่าว tech', 'พักสายตา']
-                thought = idle_actions[hash((slug, latest_task.get('ts', ''))) % len(idle_actions)]
+                idle_modes = [
+                    ('desk', 'เปิดเพลงฟังรอ PM'),
+                    ('desk', 'ดูหนังสั้นพักสมอง'),
+                    ('desk', 'หา article อ่าน'),
+                    ('lounge', 'ชงกาแฟ'),
+                    ('desk', 'จัดโต๊ะทำงาน'),
+                    ('desk', 'เปิด playlist lofi'),
+                    ('talk', 'เดินไปคุยเล่นกับเพื่อน'),
+                    ('lounge', 'พักสายตา'),
+                ]
+                idle_location, idle_thought = idle_modes[hash((slug, latest_task.get('ts', ''))) % len(idle_modes)]
+                if location == 'desk':
+                    location = idle_location
+                thought = idle_thought
             if event_kind in completion_events:
                 status = 'done'
             elif event_kind in working_events and status in ('idle', 'offline', 'done'):
