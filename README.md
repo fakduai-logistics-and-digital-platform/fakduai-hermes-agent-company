@@ -235,6 +235,25 @@ skills/mattpocock/
 
 Source: <https://github.com/mattpocock/skills/tree/main/skills>
 
+9arm skills are also vendored for debugging discipline, review, post-mortems, management updates, and long-task control:
+
+```text
+skills/9arm/
+```
+
+Source: <https://github.com/thananon/9arm-skills>
+
+Best role fit:
+
+```text
+debug-mantra      -> Backend, QA, Tech Lead for hard debugging
+post-mortem       -> Backend, QA, Tech Lead for fixed-and-validated bug RCA
+scrutinize        -> QA, Tech Lead, Backend for plan/PR/diff/design sanity checks
+management-talk   -> PM, Tech Lead for leadership/status/Slack/email updates
+qwenchance        -> all roles when long work starts looping or context gets tight
+qwen-agent        -> optional local operator skill for cheap mechanical subagent work when claude-9arm exists
+```
+
 PM/communication skill:
 
 ```text
