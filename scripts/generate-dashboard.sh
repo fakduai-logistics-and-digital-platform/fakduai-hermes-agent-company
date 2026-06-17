@@ -550,6 +550,38 @@ for slug, acfg in agents_config.items():
         'accessory': acfg.get('accessory', ''), 'homeX': home.get('x', 10), 'homeY': home.get('y', 10),
     })
 
+# Rare social idle event: one idle agent may visit one idle friend at that friend's desk.
+# Friend stays seated; visitor returns automatically when the time bucket changes.
+try:
+    now = utc_now()
+    bucket = int(now.timestamp()) // 600  # stable 10-minute window
+    minute_in_bucket = (int(now.timestamp()) % 600) // 60
+    idle_desk = [a for a in items if a.get('status') == 'idle' and a.get('location') == 'desk']
+    if len(idle_desk) >= 2 and minute_in_bucket in (2, 3) and bucket % 7 == 0:
+        visitor_idx = bucket % len(idle_desk)
+        target_idx = (visitor_idx + 1 + (bucket // max(1, len(idle_desk)))) % len(idle_desk)
+        if target_idx != visitor_idx:
+            visitor = idle_desk[visitor_idx]
+            target = idle_desk[target_idx]
+            visitor['location'] = f"visit:{target.get('id')}"
+            visitor['thought'] = f"แวะคุยกับ {target.get('name') or target.get('id')} ที่โต๊ะ"
+            visitor['speech'] = visitor['thought']
+            target['thought'] = f"คุยเล่นกับ {visitor.get('name') or visitor.get('id')} ที่โต๊ะ"
+            target['speech'] = target['thought']
+    elif len(idle_desk) >= 2 and minute_in_bucket in (4, 5) and bucket % 17 == 0:
+        first_idx = bucket % len(idle_desk)
+        second_idx = (first_idx + 1) % len(idle_desk)
+        first = idle_desk[first_idx]
+        second = idle_desk[second_idx]
+        first['location'] = 'meeting'
+        second['location'] = 'meeting'
+        first['thought'] = f"คุยเล่นกับ {second.get('name') or second.get('id')} ในห้องประชุม"
+        second['thought'] = f"คุยเล่นกับ {first.get('name') or first.get('id')} ในห้องประชุม"
+        first['speech'] = first['thought']
+        second['speech'] = second['thought']
+except Exception:
+    pass
+
 # Also write rooms and homes for dashboard
 with open(out_file, 'w', encoding='utf-8') as f:
     json.dump({
