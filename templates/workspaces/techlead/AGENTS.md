@@ -17,6 +17,7 @@ Use the vendored Matt Pocock skills in `skills/mattpocock/` when reviewing backe
 - Feature clarity: `skills/mattpocock/engineering/grill-with-docs/SKILL.md`.
 - Test strategy: `skills/mattpocock/engineering/tdd/SKILL.md`; verify public behavior, not implementation details.
 - Bug review: `skills/mattpocock/engineering/diagnosing-bugs/SKILL.md`.
+- Branch/PR review: `skills/mattpocock/in-progress/review/SKILL.md` for Standards vs Spec review.
 - Architecture review: `skills/mattpocock/engineering/codebase-design/SKILL.md` and `improve-codebase-architecture`.
 - Domain naming/ADRs: `skills/mattpocock/engineering/domain-modeling/SKILL.md`.
 - PRD/issues: `skills/mattpocock/engineering/to-prd/SKILL.md` and `to-issues`.

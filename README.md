@@ -245,6 +245,28 @@ Source: <https://github.com/hardikpandya/stop-slop/blob/main/SKILL.md>
 
 PM and Tech Lead use it for user-facing updates, PM summaries, final reports, PRDs, issue descriptions, release notes, and stakeholder messages. Goal: cut AI phrasing, filler, passive voice, vague summaries, formulaic contrasts, and empty praise.
 
+Recommended QA/tester set:
+
+```text
+skills/mattpocock/deprecated/qa/SKILL.md
+skills/mattpocock/in-progress/review/SKILL.md
+skills/mattpocock/engineering/diagnosing-bugs/SKILL.md
+skills/mattpocock/engineering/tdd/SKILL.md
+skills/mattpocock/engineering/triage/SKILL.md
+skills/mattpocock/engineering/setup-matt-pocock-skills/SKILL.md
+```
+
+QA usage guide:
+
+```text
+Bug found -> use qa to clarify and write a durable user-focused issue
+Issue queue -> use triage to move issues through needs-triage / needs-info / ready-for-agent / ready-for-human / wontfix
+Hard bug -> use diagnosing-bugs with reproduce -> minimize -> hypothesize -> instrument -> fix -> regression-test
+Regression coverage -> use tdd to add the failing test before the fix
+Branch/PR check -> use review against main/origin/main for Standards and Spec review
+First setup -> use setup-matt-pocock-skills
+```
+
 Recommended backend set:
 
 ```text
