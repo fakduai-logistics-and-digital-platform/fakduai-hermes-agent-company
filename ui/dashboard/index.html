@@ -503,28 +503,58 @@ let agents={},ROOMS=[],HOMES={},ACOL={},CLOTH={};
 let kanbanData=[],evidenceData=[],activityData={activities:[],workflows:[]};
 const CAT_POINTS=[[51,33],[46,41],[55,43],[37,75],[44,78],[52,74],[61,77],[68,72],[58,83],[42,84],[31,72]];
 const officeCats=[
-  {id:'office-cat',x:51,y:33,delay:9000,interval:65000},
-  {id:'office-cat-2',x:46,y:41,delay:26000,interval:72000},
-  {id:'office-cat-3',x:55,y:43,delay:43000,interval:78000},
+  {id:'office-cat',x:51,y:33,delay:7000},
+  {id:'office-cat-2',x:46,y:41,delay:18000},
+  {id:'office-cat-3',x:55,y:43,delay:31000},
 ];
+const rand=(min,max)=>Math.floor(min+Math.random()*(max-min+1));
+function restOfficeCat(cat,pose){
+  const el=document.getElementById(cat.id);if(!el)return;
+  el.classList.remove('cat-lay','cat-lay-back');
+  if(pose==='lay-front')el.classList.add('cat-lay');
+  if(pose==='lay-back')el.classList.add('cat-lay-back');
+  el.classList.add('resting');
+  cat.rest=true;
+}
+function scheduleOfficeCat(cat,delay=rand(18000,70000)){
+  clearTimeout(cat.timer);
+  cat.timer=setTimeout(()=>tickOfficeCat(cat),delay);
+}
+function tickOfficeCat(cat){
+  const el=document.getElementById(cat.id);if(!el)return;
+  const roll=Math.random();
+  if(roll<.58){
+    restOfficeCat(cat,'sit');
+    scheduleOfficeCat(cat,rand(22000,90000));
+    return;
+  }
+  if(roll<.76){
+    restOfficeCat(cat,Math.random()<.55?'lay-front':'lay-back');
+    scheduleOfficeCat(cat,rand(28000,95000));
+    return;
+  }
+  moveOfficeCat(cat);
+}
 function moveOfficeCat(cat){
   const el=document.getElementById(cat.id);if(!el)return;
   let next=CAT_POINTS[Math.floor(Math.random()*CAT_POINTS.length)];
-  for(let i=0;i<8&&Math.hypot(next[0]-cat.x,next[1]-cat.y)<10;i++){
+  for(let i=0;i<10&&Math.hypot(next[0]-cat.x,next[1]-cat.y)<10;i++){
     next=CAT_POINTS[Math.floor(Math.random()*CAT_POINTS.length)];
   }
   const dx=next[0]-cat.x;
   const dy=next[1]-cat.y;
   cat.x=next[0];cat.y=next[1];cat.rest=false;
-  el.classList.remove('cat-left','cat-right','cat-up','cat-down','cat-back','cat-lay','cat-lay-back');
+  el.classList.remove('resting','cat-left','cat-right','cat-up','cat-down','cat-back','cat-lay','cat-lay-back');
   if(Math.abs(dy)>Math.abs(dx))el.classList.add(dy<0?'cat-up':'cat-down');
   else el.classList.add(dx<0?'cat-left':'cat-right');
-  el.classList.remove('resting');
   el.style.left=cat.x+'%';el.style.top=cat.y+'%';
   clearTimeout(cat.restTimer);
-  cat.restTimer=setTimeout(()=>{if(Math.random()<.28)el.classList.add(el.classList.contains('cat-up')?'cat-lay-back':'cat-lay');el.classList.add('resting');cat.rest=true},18500);
+  cat.restTimer=setTimeout(()=>{
+    restOfficeCat(cat,Math.random()<.18?(el.classList.contains('cat-up')?'lay-back':'lay-front'):'sit');
+    scheduleOfficeCat(cat,rand(25000,85000));
+  },18500);
 }
-officeCats.forEach(cat=>{setInterval(()=>moveOfficeCat(cat),cat.interval);setTimeout(()=>moveOfficeCat(cat),cat.delay)});
+officeCats.forEach(cat=>scheduleOfficeCat(cat,cat.delay+rand(0,9000)));
 let tokenData={agents:[],models:[],totals:{totalTokens:0}},selectedTokenModel='';
 let selectedId='',cView='k';
 let stageAgents={};
