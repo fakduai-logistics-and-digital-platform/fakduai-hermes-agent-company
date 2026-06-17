@@ -235,6 +235,16 @@ skills/mattpocock/
 
 Source: <https://github.com/mattpocock/skills/tree/main/skills>
 
+PM/communication skill:
+
+```text
+skills/stop-slop/SKILL.md
+```
+
+Source: <https://github.com/hardikpandya/stop-slop/blob/main/SKILL.md>
+
+PM and Tech Lead use it for user-facing updates, PM summaries, final reports, PRDs, issue descriptions, release notes, and stakeholder messages. Goal: cut AI phrasing, filler, passive voice, vague summaries, formulaic contrasts, and empty praise.
+
 Recommended backend set:
 
 ```text
