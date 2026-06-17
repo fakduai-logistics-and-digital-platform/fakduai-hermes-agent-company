@@ -542,6 +542,25 @@ for slug, acfg in agents_config.items():
         'accessory': acfg.get('accessory', ''), 'homeX': home.get('x', 10), 'homeY': home.get('y', 10),
     })
 
+# Rare supervisor patrol: idle PM/Tech Lead may visit a working teammate every few minutes.
+# Target teammate stays at their own desk/zone; supervisor returns when the time bucket changes.
+try:
+    now = utc_now()
+    patrol_bucket = int(now.timestamp()) // 300  # 5-minute window
+    patrol_minute = (int(now.timestamp()) % 300) // 60
+    supervisors = [a for a in items if a.get('id') in ('pm', 'techlead') and a.get('status') == 'idle' and a.get('location') == 'desk']
+    workers = [a for a in items if a.get('status') == 'working' and a.get('id') not in ('pm', 'techlead')]
+    if supervisors and workers and patrol_minute in (1, 2) and patrol_bucket % 2 == 0:
+        supervisor = supervisors[patrol_bucket % len(supervisors)]
+        target = workers[(patrol_bucket // max(1, len(supervisors))) % len(workers)]
+        supervisor['location'] = f"visit:{target.get('id')}"
+        supervisor['thought'] = f"แวะดูงาน {target.get('name') or target.get('id')} ถาม blocker/ให้กำลังใจ"
+        supervisor['speech'] = supervisor['thought']
+        target['thought'] = f"คุยกับ {supervisor.get('name') or supervisor.get('id')} เรื่องงาน"
+        target['speech'] = target['thought']
+except Exception:
+    pass
+
 # Rare social idle event: one idle agent may visit one idle friend at that friend's desk.
 # Friend stays seated; visitor returns automatically when the time bucket changes.
 try:
