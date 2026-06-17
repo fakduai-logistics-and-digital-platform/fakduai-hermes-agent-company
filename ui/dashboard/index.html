@@ -1606,12 +1606,12 @@ async function fetchAll(){
       else{const prev=agents[d.id].status,pL=agents[d.id].location;agents[d.id]={...agents[d.id],...d};if(prev!==d.status||pL!==d.location){const tg=getTarget(d.id,d.location);agents[d.id]._tx=tg.x;agents[d.id]._ty=tg.y}}
     });
     _ad=list;
-    const agentById=new Map(list.map(a=>[a.id,a]));
-    kanbanData=ensureRosterCards((kd.cards||kd).map(c=>{
-      const agent=agentById.get(c.id)||agentById.get(c.ownerId);
-      if(!agent)return{...c,blocker:blocker(c)};
-      return{...c,status:agent.status,title:agent.objective||c.title,nextAction:agent.nextAction||c.nextAction,lastOutput:agent.lastOutput||c.lastOutput,updatedAt:agent.updatedAt||c.updatedAt,blocker:blocker(agent)};
-    }));
+    const rawCards=(kd.cards||kd||[]).filter(Boolean);
+    const cardByAgent=new Map(rawCards.map(c=>[c.ownerId||c.id,c]));
+    kanbanData=list.map(agent=>{
+      const old=cardByAgent.get(agent.id)||{};
+      return{...cardFromAgent(agent),workItem:old.workItem||'none',plan:old.plan||'',details:old.details||{},screenshots:old.screenshots||[],videos:old.videos||[],pmTasks:old.pmTasks||null,warnings:old.warnings||[],escalation:old.escalation||null,requiredAction:old.requiredAction||''};
+    });
     evidenceData=ed.artifacts||ed||[];activityData={activities:acd.activities||[],workflows:acd.workflows||[]};
     // Keep agents seated at their own desks during Hermes company workflows.
     // Activity should update status/bubbles, not force everyone into a meeting pose.
