@@ -252,7 +252,13 @@ workers-best-practices  -> Frontend, Backend for Workers-compatible code/review
 web-perf                -> Frontend for performance checks
 ```
 
-When the user asks to run, preview, host, deploy, open, or show a product, PM should route that request directly to Frontend and/or Backend. The dev team should create a local runnable preview first and, when credentials/auth are available, use Cloudflare/Wrangler to produce a hosted preview URL. Do not ask the user to run the product themselves unless the environment or credentials are missing.
+When the user asks to run, preview, host, deploy, open, or show a product, PM should route that request directly to Frontend and/or Backend. The dev team should create a local runnable preview first and, when credentials/auth are available, use Cloudflare/Wrangler to produce a hosted preview URL. If Cloudflare auth is unavailable, dev can use `localhost.run` as a no-login SSH fallback:
+
+```bash
+ssh -R 80:localhost:3000 nokey@localhost.run
+```
+
+Do not ask the user to run the product themselves unless the environment or credentials are missing.
 
 9arm skills are also vendored for debugging discipline, review, post-mortems, management updates, and long-task control:
 
