@@ -215,6 +215,18 @@ QA must use Playwright for browser-facing UI/E2E validation. See [Playwright QA 
 
 `scripts/dashboard.sh` keeps dashboard data refreshed every 3 seconds by default. The Work modal includes an Activity tab that shows workflow starts, handoffs, and queued agent messages.
 
+## Vendored Agent Skills
+
+This repo vendors Karpathy Guidelines for all agents:
+
+```text
+skills/karpathy-guidelines/SKILL.md
+```
+
+Source: <https://github.com/multica-ai/andrej-karpathy-skills/blob/main/skills/karpathy-guidelines/SKILL.md>
+
+All workspace agents are instructed to use it for coding, reviewing, refactoring, debugging, and implementation planning. It biases agents toward explicit assumptions, simple solutions, surgical edits, and verifiable success criteria.
+
 ## Vendored UI Skills
 
 This repo vendors Taste Skill for UI/design agents:

@@ -164,7 +164,7 @@ for event in task_send_events:
     event_kind = str(event.get('kind') or event.get('type') or '').lower()
     # Hermes completion/handoff events are displayed on the speaking agent,
     # not only the receiving route target.
-    if event_kind in {'role_completed', 'peer_handoff', 'followup_completed', 'pm_review_completed', 'workflow_completed'}:
+    if event_kind in {'role_completed', 'peer_handoff', 'followup_completed', 'pm_review_completed', 'workflow_completed', 'message_started', 'message_delta', 'message_completed'}:
         target = event.get('agent') or event.get('from') or event.get('to')
     else:
         target = event.get('to') or event.get('agent')
@@ -439,14 +439,14 @@ for slug, acfg in agents_config.items():
             # Normal Hermes workflow activity means agents work at their own desks.
             # Only explicit meeting events move them into the meeting room.
             event_kind = str(latest_task.get('kind') or latest_task.get('type') or '').lower()
-            completion_events = {'role_completed', 'peer_handoff', 'followup_completed', 'pm_review_completed', 'workflow_completed'}
-            working_events = {'role_started', 'task_dispatched', 'followup_dispatched', 'pm_review_started', 'review_started'}
+            completion_events = {'role_completed', 'peer_handoff', 'followup_completed', 'pm_review_completed', 'workflow_completed', 'message_completed'}
+            working_events = {'role_started', 'task_dispatched', 'followup_dispatched', 'pm_review_started', 'review_started', 'message_started', 'message_delta'}
             if 'meeting' in event_kind:
                 location = 'meeting'
             else:
                 location = 'desk'
             event_message = re.sub(r'\s+', ' ', (latest_task.get('message') or latest_task.get('summary') or '')).strip()
-            if event_kind in {'role_completed', 'peer_handoff', 'followup_completed', 'pm_review_completed', 'workflow_completed'} and event_message:
+            if event_message and (event_kind.startswith('message_') or event_kind in {'role_completed', 'peer_handoff', 'followup_completed', 'pm_review_completed', 'workflow_completed'}):
                 thought = event_message[:180]
             else:
                 thought = f"New task: {task_preview[:72]}"
