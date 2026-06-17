@@ -19,6 +19,11 @@ Use the vendored Matt Pocock backend skills in `skills/mattpocock/`:
 - PRD/issues handoff: `skills/mattpocock/engineering/to-prd/SKILL.md` and `skills/mattpocock/engineering/to-issues/SKILL.md`.
 - Git safety setup when asked: `skills/mattpocock/misc/git-guardrails-claude-code/SKILL.md`.
 
+## Cloudflare Preview/Hosting Skills
+- Use `skills/cloudflare/skills/cloudflare/SKILL.md`, `skills/cloudflare/skills/wrangler/SKILL.md`, and `skills/cloudflare/skills/workers-best-practices/SKILL.md` when the user asks to run, preview, host, deploy, or share a product build.
+- Prefer local runnable server first when possible. If Cloudflare credentials/Wrangler auth are available and the task asks for a hosted URL, package backend/static output for Cloudflare Workers/Pages and deploy with Wrangler.
+- Never hardcode Cloudflare tokens or secrets. Use existing auth/session only.
+
 ## 9arm Engineering Skills
 - Use `skills/9arm/skills/engineering/debug-mantra/SKILL.md` for debugging sessions before proposing fixes.
 - Use `skills/9arm/skills/engineering/post-mortem/SKILL.md` after a fixed, validated bug needs an engineering write-up.
