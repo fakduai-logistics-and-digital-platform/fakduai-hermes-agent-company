@@ -1,10 +1,153 @@
-# OpenClaw Company - Configurable AI Office Dashboard
+# Fakduai Hermes Agent Company
 
-Create a multi-agent company workspace on OpenClaw with a lightweight office dashboard and role-based agent workflows.
+Configurable AI company workspace for Hermes Agent + Pinto.
 
-Customize the active team by editing a single office config.
+This repo provides:
 
-## Quick Start
+- role/persona templates for PM, Solution Designer, Frontend, Backend, QA, and Tech Lead
+- a local office dashboard for Hermes workflow activity
+- Taste Skill UI/design skills for Designer and Frontend agents
+- optional legacy OpenClaw scripts for teams that still use OpenClaw
+
+Use this with the Hermes Pinto runtime repo:
+
+```text
+https://github.com/fakduai-logistics-and-digital-platform/hermes-fakduai-pinto
+```
+
+
+## Hermes + Pinto Integration
+
+Recommended setup for teammates:
+
+1. Clone and run the Hermes Pinto runtime repo first.
+
+   ```bash
+   git clone git@github.com:fakduai-logistics-and-digital-platform/hermes-fakduai-pinto.git
+   cd hermes-fakduai-pinto
+   cp .env.example .env
+   # Fill Pinto + provider config in .env.
+   # Do not commit .env.
+   scripts/podman-start.sh
+   scripts/podman-tunnel-start.sh
+   ```
+
+2. In Pinto Developer Console, set webhook URL to the Cloudflare Quick Tunnel URL printed by Hermes:
+
+   ```text
+   https://<trycloudflare-host>/plugins/pinto/webhook
+   ```
+
+3. Verify Hermes locally:
+
+   ```bash
+   curl http://127.0.0.1:8642/health
+   curl http://127.0.0.1:8642/plugins/pinto/webhook
+   ```
+
+   Expected health:
+
+   ```json
+   {"status":"ok","platform":"hermes-agent"}
+   ```
+
+4. Clone this company repo beside the Hermes repo:
+
+   ```bash
+   cd /path/to/workspace
+   git clone git@github.com:fakduai-logistics-and-digital-platform/fakduai-hermes-agent-company.git
+   cd fakduai-hermes-agent-company
+   ```
+
+5. Start the company dashboard without syncing OpenClaw config:
+
+   ```bash
+   SKIP_OPENCLAW_SYNC=1 ./scripts/bootstrap.sh
+   ./scripts/dashboard-detached.sh --port 8090 --interval 3
+   ```
+
+6. In `hermes-fakduai-pinto/hermes-config/config.yaml`, configure Pinto company workflow to use the company roles. Keep real bot IDs, secrets, and local persona text out of git.
+
+   Example shape:
+
+   ```yaml
+   platforms:
+     pinto:
+       extra:
+         companyName: proton
+         persona: pm
+         companyWorkflow:
+           - pm
+           - designer
+           - frontend
+           - backend
+           - qa
+           - techlead
+   pintoAgents:
+     pm:
+       name: PM
+       channelPrompt: "...local PM prompt..."
+     designer:
+       name: Solution Designer
+       channelPrompt: "...local designer prompt..."
+     frontend:
+       name: Frontend Engineer
+       channelPrompt: "...local frontend prompt..."
+     backend:
+       name: Backend Engineer
+       channelPrompt: "...local backend prompt..."
+     qa:
+       name: QA Engineer
+       channelPrompt: "...local QA prompt..."
+     techlead:
+       name: Tech Lead
+       channelPrompt: "...local tech lead prompt..."
+   ```
+
+7. Set project output path in the Hermes runtime if not already set:
+
+   ```env
+   COMPANY_PROJECTS_DIR=/company-projects
+   ```
+
+   Generated projects should appear on the host under:
+
+   ```text
+   /path/to/hermes-fakduai-pinto/hermes-config/company-projects
+   ```
+
+8. Send a real Pinto chat message to the connected bot. Hermes should:
+
+   ```text
+   Pinto chat -> Hermes -> PM -> Designer -> Frontend -> Backend -> QA -> Tech Lead -> Pinto final reply
+   ```
+
+   Milestone progress messages go back to Pinto chat. Detailed agent activity appears in the local dashboard:
+
+   ```text
+   http://127.0.0.1:8090/
+   ```
+
+Notes:
+
+- Cloudflare Quick Tunnel URLs are temporary. If `cloudflared` restarts, update Pinto Developer Console with the new URL.
+- Do not commit `.env`, `hermes-config/`, real bot IDs, webhook secrets, API keys, or local persona prompts.
+- This repo does not require OpenClaw for Hermes usage. Use `SKIP_OPENCLAW_SYNC=1` unless you explicitly want legacy OpenClaw config sync.
+
+## Quick Start: Local Dashboard Only
+
+```bash
+# Review or edit office display config
+$EDITOR config/office.json
+
+# Create shared status files and dashboard data without touching OpenClaw
+SKIP_OPENCLAW_SYNC=1 ./scripts/bootstrap.sh
+
+# Run the dashboard
+./scripts/dashboard.sh
+```
+
+## Legacy OpenClaw Quick Start
 
 ```bash
 # Review or edit the active six-agent company config
@@ -15,9 +158,6 @@ $EDITOR config/office.json
 ./scripts/bootstrap.sh
 
 # Restart/recreate the OpenClaw gateway or container so it loads the new agents
-
-# Run the dashboard
-./scripts/dashboard.sh
 
 # Start a routed multi-agent workflow
 ./scripts/start-workflow.sh "Build the customer login flow"
