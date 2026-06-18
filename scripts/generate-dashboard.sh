@@ -1330,20 +1330,27 @@ activities = []
 workflows = []
 
 for event in task_send_events:
-    activities.append({
+    kind = event.get('kind') or event.get('type') or 'task_sent'
+    row = {
         'ts': event.get('ts', ''),
         'workflowId': event.get('workflowId', '') or 'direct-task',
-        'kind': 'task_sent',
-        'type': 'task_sent',
+        'kind': kind,
+        'type': kind,
         'from': event.get('from', 'human'),
         'to': event.get('to', ''),
-        'summary': task_event_preview(event),
+        'agent': event.get('agent') or event.get('to', ''),
+        'summary': event.get('summary') or task_event_preview(event),
+        'message': event.get('message', ''),
         'delivery': event.get('delivery', ''),
         'sendId': event.get('sendId', ''),
         'todos': event.get('todos') or [],
         'todoIndex': event.get('todoIndex'),
         'todoTotal': event.get('todoTotal'),
-    })
+    }
+    if event.get('skillFiles') or event.get('files'):
+        row['skillFiles'] = event.get('skillFiles') or event.get('files') or []
+        row['files'] = row['skillFiles']
+    activities.append(row)
 
 def read_workflow_objective(workflow_dir):
     wf = workflow_dir / 'WORKFLOW.md'
