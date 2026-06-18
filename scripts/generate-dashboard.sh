@@ -470,6 +470,9 @@ for slug, acfg in agents_config.items():
             'sentAt': latest_task.get('ts', ''),
             'ageSeconds': task_age,
             'isRecent': bool(task_is_recent),
+            'todos': latest_task.get('todos') or [],
+            'todoIndex': latest_task.get('todoIndex'),
+            'todoTotal': latest_task.get('todoTotal'),
         }
         if task_is_recent:
             # Normal Hermes workflow activity means agents work at their own desks.
@@ -533,6 +536,9 @@ for slug, acfg in agents_config.items():
         'nextAction': next_action, 'lastOutput': last_output, 'updatedAt': updated, 'location': location,
         'speech': thought, 'thought': thought,
         'recentTask': recent_task,
+        'todos': (latest_task.get('todos') or []) if latest_task else [],
+        'todoIndex': latest_task.get('todoIndex') if latest_task else None,
+        'todoTotal': latest_task.get('todoTotal') if latest_task else None,
         'blocker': blocker_from_status(status, text, next_action),
         'stale': stale_summary(updated, status),
         'evidenceLinks': [],
