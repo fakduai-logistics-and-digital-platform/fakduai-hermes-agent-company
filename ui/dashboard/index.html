@@ -733,6 +733,16 @@ function meetingTopicText(v){
 }
 function currentWorkSummary(){
   const cards=(kanbanData||[]).filter(Boolean);
+  const acts=(activityData.activities||[]).filter(Boolean);
+  const latestCompleted=acts.filter(a=>['workflow_completed','delivered','delivery_completed'].includes(String(a.type||a.kind||'').toLowerCase()))
+    .sort((a,b)=>(parseTs(b.ts)?.getTime()||0)-(parseTs(a.ts)?.getTime()||0))[0];
+  const latestStart=acts.filter(a=>['team_meeting_started','role_started','task_dispatched','followup_dispatched'].includes(String(a.type||a.kind||'').toLowerCase()))
+    .sort((a,b)=>(parseTs(b.ts)?.getTime()||0)-(parseTs(a.ts)?.getTime()||0))[0];
+  const completedAt=parseTs(latestCompleted&&latestCompleted.ts)?.getTime()||0;
+  const startAt=parseTs(latestStart&&latestStart.ts)?.getTime()||0;
+  if(latestCompleted&&completedAt>=startAt){
+    return{pct:100,topic:meetingTopicText(latestCompleted.summary||latestCompleted.message||'Work delivered')};
+  }
   const active=cards.filter(c=>['working','blocked'].includes(norm(c.status))||blocker(c).is)
     .sort((a,b)=>(parseTs(b.updatedAt)?.getTime()||0)-(parseTs(a.updatedAt)?.getTime()||0));
   if(!active.length){
