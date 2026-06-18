@@ -177,6 +177,7 @@ def load_task_send_events():
 
 task_send_events = load_task_send_events()
 latest_task_by_agent = {}
+latest_todo_by_agent = {}
 for event in task_send_events:
     event_kind = str(event.get('kind') or event.get('type') or '').lower()
     # Hermes completion/handoff events are displayed on the speaking agent,
@@ -187,6 +188,8 @@ for event in task_send_events:
         target = event.get('to') or event.get('agent')
     if target and target not in latest_task_by_agent:
         latest_task_by_agent[target] = event
+    if target and event.get('todos') and target not in latest_todo_by_agent:
+        latest_todo_by_agent[target] = event
 
 def stale_summary(updated, status):
     dt = parse_ts(updated)
@@ -470,9 +473,9 @@ for slug, acfg in agents_config.items():
             'sentAt': latest_task.get('ts', ''),
             'ageSeconds': task_age,
             'isRecent': bool(task_is_recent),
-            'todos': latest_task.get('todos') or [],
-            'todoIndex': latest_task.get('todoIndex'),
-            'todoTotal': latest_task.get('todoTotal'),
+            'todos': (latest_task.get('todos') or (latest_todo_by_agent.get(slug) or {}).get('todos') or []),
+            'todoIndex': latest_task.get('todoIndex') if latest_task.get('todos') else (latest_todo_by_agent.get(slug) or {}).get('todoIndex'),
+            'todoTotal': latest_task.get('todoTotal') if latest_task.get('todos') else (latest_todo_by_agent.get(slug) or {}).get('todoTotal'),
         }
         if task_is_recent:
             # Normal Hermes workflow activity means agents work at their own desks.
@@ -536,9 +539,9 @@ for slug, acfg in agents_config.items():
         'nextAction': next_action, 'lastOutput': last_output, 'updatedAt': updated, 'location': location,
         'speech': thought, 'thought': thought,
         'recentTask': recent_task,
-        'todos': (latest_task.get('todos') or []) if latest_task else [],
-        'todoIndex': latest_task.get('todoIndex') if latest_task else None,
-        'todoTotal': latest_task.get('todoTotal') if latest_task else None,
+        'todos': ((latest_task.get('todos') or []) if latest_task else []) or ((latest_todo_by_agent.get(slug) or {}).get('todos') or []),
+        'todoIndex': (latest_task.get('todoIndex') if latest_task and latest_task.get('todos') else (latest_todo_by_agent.get(slug) or {}).get('todoIndex')),
+        'todoTotal': (latest_task.get('todoTotal') if latest_task and latest_task.get('todos') else (latest_todo_by_agent.get(slug) or {}).get('todoTotal')),
         'blocker': blocker_from_status(status, text, next_action),
         'stale': stale_summary(updated, status),
         'evidenceLinks': [],
@@ -892,6 +895,7 @@ for slug, acfg in agents_config.items():
         elif any(w['type'] == 'weak-output' for w in warnings):
             required_action = f"{escalation_owner} must request a more concrete output update"
 
+    todo_source = recent_card_task if (recent_card_task and recent_card_task.get('todos')) else latest_todo_by_agent.get(slug)
     cards.append({
         'id': slug,
         'workItem': work_item,
@@ -905,6 +909,9 @@ for slug, acfg in agents_config.items():
         'plan': plan_short,
         'nextAction': next_action[:200],
         'lastOutput': last_output[:200],
+        'todos': (todo_source or {}).get('todos') or [],
+        'todoIndex': (todo_source or {}).get('todoIndex'),
+        'todoTotal': (todo_source or {}).get('todoTotal'),
         'recentTask': {
             'sendId': recent_card_task.get('sendId', ''),
             'from': recent_card_task.get('from', 'human'),
@@ -914,6 +921,9 @@ for slug, acfg in agents_config.items():
             'sentAt': recent_card_task.get('ts', ''),
             'ageSeconds': task_event_age_seconds(recent_card_task),
             'isRecent': is_recent_task_event(recent_card_task),
+            'todos': (recent_card_task.get('todos') or (latest_todo_by_agent.get(slug) or {}).get('todos') or []),
+            'todoIndex': recent_card_task.get('todoIndex') if recent_card_task.get('todos') else (latest_todo_by_agent.get(slug) or {}).get('todoIndex'),
+            'todoTotal': recent_card_task.get('todoTotal') if recent_card_task.get('todos') else (latest_todo_by_agent.get(slug) or {}).get('todoTotal'),
         } if recent_card_task else None,
         'blocker': blocker_from_status(raw_status, text, next_action),
         'stale': {
