@@ -36,8 +36,10 @@ Use the vendored Matt Pocock backend skills in `skills/mattpocock/`:
 
 ## Cloudflare Preview/Hosting Skills
 - Use `skills/cloudflare/skills/cloudflare/SKILL.md`, `skills/cloudflare/skills/wrangler/SKILL.md`, and `skills/cloudflare/skills/workers-best-practices/SKILL.md` when the user asks to run, preview, host, deploy, or share a product build.
-- Prefer local runnable server first when possible. If Cloudflare credentials/Wrangler auth are available and the task asks for a hosted URL, package backend/static output for Cloudflare Workers/Pages and deploy with Wrangler.
-- If Cloudflare auth is unavailable but a public preview is requested, use `localhost.run` as no-login fallback when SSH is available, for example `ssh -R 80:localhost:3000 nokey@localhost.run` after starting the local preview server on port 3000.
+- Prefer local runnable server first when possible, then use Cloudflare only for public preview/hosting.
+- If Cloudflare credentials/Wrangler auth are available and the task asks for a hosted URL, package backend/static output for Cloudflare Workers/Pages and deploy with Wrangler.
+- Do not use `localhost.run`, SSH reverse tunnels, ngrok, or other non-Cloudflare public preview fallbacks.
+- If Cloudflare auth is unavailable, say Cloudflare preview is not available yet; do not claim a public hosted preview.
 - Never hardcode Cloudflare tokens or secrets. Use existing auth/session only.
 
 ## 9arm Engineering Skills
