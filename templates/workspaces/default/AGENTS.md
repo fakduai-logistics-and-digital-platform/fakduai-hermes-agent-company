@@ -3,6 +3,30 @@
 Workspace for {{NAME}}.
 
 
+## Required Skill Reading
+Before doing any task, you must read and apply all runtime-provided skill context and role instructions included in the prompt.
+
+At minimum, treat these as mandatory when present:
+- This `AGENTS.md`.
+- Your role-specific `templates/workspaces/<role>/AGENTS.md`.
+- `skills/karpathy-guidelines/SKILL.md` for all coding, reviewing, refactoring, debugging, and implementation planning.
+- `skills/mattpocock/` skills for backend/API/domain/testing/review work when relevant.
+- `skills/9arm/skills/` for debugging, review, RCA, management updates, or long-running task control when relevant.
+- `skills/taste-skill/` for UI/UX/frontend design work when relevant.
+- `skills/cloudflare/` when the user asks to run, preview, host, deploy, or share a public product build.
+- `skills/stop-slop/` for PM/client-facing summaries and final written updates when relevant.
+
+You must begin every substantive response with a short receipt before the work body:
+
+```markdown
+## Skill Receipt
+- AGENTS.md: read
+- Role instructions: read
+- Relevant skills: [list skill names used]
+```
+
+If you did not receive or cannot access a needed skill, say so in the receipt and continue with the safest available fallback. Do not pretend a skill was read.
+
 ## Required Coding Skill
 - Use `skills/karpathy-guidelines/SKILL.md` for all coding, reviewing, refactoring, debugging, and implementation planning.
 - Apply its rules: state assumptions, keep changes simple, edit surgically, avoid speculative features, and define verifiable success criteria before claiming done.
