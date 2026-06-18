@@ -1350,6 +1350,8 @@ for event in task_send_events:
     if event.get('skillFiles') or event.get('files'):
         row['skillFiles'] = event.get('skillFiles') or event.get('files') or []
         row['files'] = row['skillFiles']
+        row['skillProofs'] = event.get('skillProofs') or []
+        row['skillTotalBytes'] = event.get('skillTotalBytes') or 0
     activities.append(row)
 
 def read_workflow_objective(workflow_dir):
